@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>تسجيل الدخول</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --discord: #5865F2;
+      --discord-hover: #4752C4;
+      --bg: #0a0b0f;
+      --card: #111218;
+      --border: #1e2030;
+      --text: #e8eaf6;
+      --muted: #6b7280;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 20%, rgba(88,101,242,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 80%, rgba(88,101,242,0.08) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Floating particles */
+    .particles {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(88,101,242,0.3);
+      animation: float linear infinite;
+    }
+
+    @keyframes float {
+      0%   { transform: translateY(110vh) scale(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.5; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 52px 44px;
+      width: 420px;
+      max-width: 95vw;
+      text-align: center;
+      box-shadow:
+        0 0 0 1px rgba(88,101,242,0.05),
+        0 32px 64px rgba(0,0,0,0.6),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      animation: cardIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Top accent line */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(88,101,242,0.8), transparent);
+      border-radius: 50%;
+    }
+
+    .logo {
+      width: 72px;
+      height: 72px;
+      background: linear-gradient(135deg, var(--discord), #7289da);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 28px;
+      box-shadow: 0 8px 32px rgba(88,101,242,0.4);
+      animation: logoPop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+    }
+
+    @keyframes logoPop {
+      from { transform: scale(0) rotate(-10deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .logo svg { width: 40px; height: 40px; fill: white; }
+
+    h1 {
+      font-size: 1.75rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #fff 40%, rgba(88,101,242,0.8));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 0.92rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+      color: var(--border);
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider span { font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+
+    .btn-discord {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 15px 24px;
+      background: var(--discord);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(88,101,242,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-discord::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.08), transparent);
+      pointer-events: none;
+    }
+
+    .btn-discord:hover {
+      background: var(--discord-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(88,101,242,0.5);
+    }
+
+    .btn-discord:active { transform: translateY(0); }
+
+    .btn-discord svg { width: 22px; height: 22px; fill: white; flex-shrink: 0; }
+
+    .footer-note {
+      margin-top: 28px;
+      font-size: 0.78rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .footer-note a {
+      color: rgba(88,101,242,0.8);
+      text-decoration: none;
+    }
+
+    .footer-note a:hover { text-decoration: underline; }
+
+    .perms {
+      margin: 28px 0;
+      background: rgba(88,101,242,0.05);
+      border: 1px solid rgba(88,101,242,0.12);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: right;
+    }
+
+    .perms p {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .perm-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.82rem;
+      color: #9ca3af;
+      margin-bottom: 6px;
+    }
+
+    .perm-item:last-child { margin-bottom: 0; }
+
+    .perm-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--discord);
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating particles -->
+  <div class="particles" id="particles"></div>
+
+  <div class="card">
+    <div class="logo">
+      <!-- Discord icon -->
+      <svg viewBox="0 0 71 55" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60.1 4.9A58.5 58.5 0 0 0 45.6.4a.2.2 0 0 0-.2.1 40.8 40.8 0 0 0-1.8 3.7 54 54 0 0 0-16.2 0A37.5 37.5 0 0 0 25.6.5a.2.2 0 0 0-.2-.1 58.4 58.4 0 0 0-14.5 4.5.2.2 0 0 0-.1.1C1.6 18.7-.9 32.2.3 45.5c0 .1.1.2.2.2a58.9 58.9 0 0 0 17.7 8.9.2.2 0 0 0 .2-.1 42 42 0 0 0 3.6-5.9.2.2 0 0 0-.1-.3 38.7 38.7 0 0 1-5.5-2.6.2.2 0 0 1 0-.4l1.1-.8a.2.2 0 0 1 .2 0c11.5 5.3 24 5.3 35.4 0a.2.2 0 0 1 .2 0l1.1.8a.2.2 0 0 1 0 .4 36.2 36.2 0 0 1-5.5 2.6.2.2 0 0 0-.1.3 47.1 47.1 0 0 0 3.6 5.9.2.2 0 0 0 .2.1 58.7 58.7 0 0 0 17.8-8.9.2.2 0 0 0 .1-.2c1.5-15.4-2.5-28.7-10.6-40.6a.2.2 0 0 0-.1-.1ZM23.7 37.8c-3.5 0-6.4-3.2-6.4-7.1s2.8-7.1 6.4-7.1c3.6 0 6.5 3.2 6.4 7.1 0 4-2.8 7.1-6.4 7.1Zm23.7 0c-3.5 0-6.4-3.2-6.4-7.1s2.8-7.1 6.4-7.1c3.6 0 6.5 3.2 6.4 7.1 0 4-2.8 7.1-6.4 7.1Z"/>
+      </svg>
+    </div>
+
+    <h1>مرحباً بك 👋</h1>
+    <p class="subtitle">سجّل دخولك باستخدام حساب Discord<br/>للوصول إلى لوحة التحكم</p>
+
+    <div class="perms">
+      <p>الصلاحيات المطلوبة:</p>
+      <div class="perm-item"><span class="perm-dot"></span> قراءة معلومات حسابك الأساسية</div>
+      <div class="perm-item"><span class="perm-dot"></span> الاطلاع على بريدك الإلكتروني</div>
+      <div class="perm-item"><span class="perm-dot"></span> رؤية السيرفرات المشتركة</div>
+    </div>
+
+    <a href="/auth/discord" class="btn-discord" id="loginBtn">
+      <svg viewBox="0 0 71 55" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60.1 4.9A58.5 58.5 0 0 0 45.6.4a.2.2 0 0 0-.2.1 40.8 40.8 0 0 0-1.8 3.7 54 54 0 0 0-16.2 0A37.5 37.5 0 0 0 25.6.5a.2.2 0 0 0-.2-.1 58.4 58.4 0 0 0-14.5 4.5.2.2 0 0 0-.1.1C1.6 18.7-.9 32.2.3 45.5c0 .1.1.2.2.2a58.9 58.9 0 0 0 17.7 8.9.2.2 0 0 0 .2-.1 42 42 0 0 0 3.6-5.9.2.2 0 0 0-.1-.3 38.7 38.7 0 0 1-5.5-2.6.2.2 0 0 1 0-.4l1.1-.8a.2.2 0 0 1 .2 0c11.5 5.3 24 5.3 35.4 0a.2.2 0 0 1 .2 0l1.1.8a.2.2 0 0 1 0 .4 36.2 36.2 0 0 1-5.5 2.6.2.2 0 0 0-.1.3 47.1 47.1 0 0 0 3.6 5.9.2.2 0 0 0 .2.1 58.7 58.7 0 0 0 17.8-8.9.2.2 0 0 0 .1-.2c1.5-15.4-2.5-28.7-10.6-40.6a.2.2 0 0 0-.1-.1ZM23.7 37.8c-3.5 0-6.4-3.2-6.4-7.1s2.8-7.1 6.4-7.1c3.6 0 6.5 3.2 6.4 7.1 0 4-2.8 7.1-6.4 7.1Zm23.7 0c-3.5 0-6.4-3.2-6.4-7.1s2.8-7.1 6.4-7.1c3.6 0 6.5 3.2 6.4 7.1 0 4-2.8 7.1-6.4 7.1Z"/>
+      </svg>
+      تسجيل الدخول عبر Discord
+    </a>
+
+    <p class="footer-note">
+      بالضغط أعلاه توافق على
+      <a href="#">شروط الخدمة</a> و<a href="#">سياسة الخصوصية</a>
+    </p>
+  </div>
+
+  <script>
+    // Generate floating particles
+    const container = document.getElementById('particles');
+    for (let i = 0; i < 18; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 4 + 2;
+      p.style.cssText = `
+        width:${size}px; height:${size}px;
+        left:${Math.random() * 100}%;
+        animation-duration:${Math.random() * 12 + 8}s;
+        animation-delay:${Math.random() * 8}s;
+        opacity:${Math.random() * 0.5 + 0.1};
+      `;
+      container.appendChild(p);
+    }
+  </script>
+</body>
+</html>
