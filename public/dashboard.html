@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>لوحة التحكم</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --discord: #5865F2;
+      --bg: #0a0b0f;
+      --card: #111218;
+      --border: #1e2030;
+      --text: #e8eaf6;
+      --muted: #6b7280;
+    }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 50% at 15% 30%, rgba(88,101,242,0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+      animation: fadeIn 0.6s ease both;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 80px;
+      background: linear-gradient(135deg, rgba(88,101,242,0.3), rgba(114,137,218,0.15));
+    }
+
+    .avatar {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      border: 4px solid var(--discord);
+      position: relative;
+      z-index: 1;
+      margin-bottom: 16px;
+      box-shadow: 0 0 0 6px rgba(88,101,242,0.15);
+    }
+
+    .username {
+      font-size: 1.5rem;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .tag {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(88,101,242,0.15);
+      border: 1px solid rgba(88,101,242,0.3);
+      color: #818cf8;
+      padding: 4px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 32px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      text-align: right;
+      margin-bottom: 28px;
+    }
+
+    .info-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+
+    .info-label {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+
+    .info-value {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .btn-logout {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 28px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--muted);
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .btn-logout:hover {
+      border-color: #ef4444;
+      color: #ef4444;
+      background: rgba(239,68,68,0.05);
+    }
+
+    .welcome-text {
+      margin-bottom: 28px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="profile-card">
+      <img class="avatar" id="avatar" src="" alt="avatar"/>
+      <div class="username" id="username">جار التحميل...</div>
+      <div class="tag" id="tag"></div>
+      <div class="badge">✓ تم تسجيل الدخول بنجاح</div>
+
+      <p class="welcome-text">مرحباً بك في لوحة التحكم 🎉</p>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">المعرّف (ID)</div>
+          <div class="info-value" id="userId" style="font-size:0.75rem">—</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">البريد الإلكتروني</div>
+          <div class="info-value" id="email">—</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">حالة الحساب</div>
+          <div class="info-value" style="color:#22c55e">✓ مفعّل</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">نوع الحساب</div>
+          <div class="info-value" id="locale">—</div>
+        </div>
+      </div>
+
+      <a href="/auth/logout" class="btn-logout">
+        ⎋ تسجيل الخروج
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Fetch user info from backend
+    fetch('/auth/user')
+      .then(r => r.json())
+      .then(user => {
+        document.getElementById('username').textContent = user.global_name || user.username;
+        document.getElementById('tag').textContent = '@' + user.username;
+        document.getElementById('userId').textContent = user.id;
+        document.getElementById('email').textContent = user.email || 'مخفي';
+        document.getElementById('locale').textContent = user.premium_type ? 'Nitro' : 'عادي';
+
+        const avatarUrl = user.avatar
+          ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`
+          : `https://cdn.discordapp.com/embed/avatars/${parseInt(user.id) % 5}.png`;
+        document.getElementById('avatar').src = avatarUrl;
+      })
+      .catch(() => {
+        window.location.href = '/';
+      });
+  </script>
+</body>
+</html>
