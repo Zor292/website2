@@ -11,12 +11,21 @@ const path    = require('path');
 const app = express();
 
 // ─── CONFIG (يقرأ من Environment Variables على Railway) ─────
+const PORT = process.env.PORT || 3000;
+
+// تحديد الرابط الأساسي تلقائياً
+const BASE_URL = process.env.REDIRECT_URI
+  ? process.env.REDIRECT_URI.replace('/auth/callback', '')
+  : (process.env.RAILWAY_PUBLIC_DOMAIN
+      ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+      : `http://localhost:${PORT}`);
+
 const CONFIG = {
-  CLIENT_ID:      process.env.CLIENT_ID     || '1476983875598024824',
-  CLIENT_SECRET:  process.env.CLIENT_SECRET || '',   // لا تضعها هنا - ضعها في Railway
-  REDIRECT_URI:   process.env.REDIRECT_URI  || 'http://localhost:3000/auth/callback',
-  SESSION_SECRET: process.env.SESSION_SECRET|| 'change-this-secret',
-  PORT:           process.env.PORT          || 3000,
+  CLIENT_ID:      process.env.CLIENT_ID      || '1476983875598024824',
+  CLIENT_SECRET:  process.env.CLIENT_SECRET  || '',
+  REDIRECT_URI:   `${BASE_URL}/auth/callback`,
+  SESSION_SECRET: process.env.SESSION_SECRET || 'change-this-secret',
+  PORT,
 };
 
 const SCOPES    = 'identify email guilds';
