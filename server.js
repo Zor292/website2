@@ -14,7 +14,7 @@ const app = express();
 const GUILD_ID       = '1421088112808951852';
 const STAFF_ROLE_ID  = '1471530512622555297';
 const ADMIN_ROLE_ID  = '1471922925681639625';
-const BANNED_TWEET_ROLE = '1471546898794942646'; // ممنوع من التغريد
+const ALLOWED_TWEET_ROLE = '1471546898794942646'; // فقط من لديه هذه الرتبة يستطيع التغريد
 
 // ترتيب الفريق الإداري حسب الرتبة
 const STAFF_ORDER = [
@@ -569,9 +569,9 @@ app.get('/api/tweets', async (req, res) => {
 
 app.post('/api/tweets', requireAuth, async (req, res) => {
   try {
-    // Check if banned from tweeting
+    // فقط من لديه الرتبة المحددة يستطيع التغريد
     const roles = await getMemberRoles(req.session.user.id);
-    if (roles.includes(BANNED_TWEET_ROLE)) return res.status(403).json({ error: 'banned_from_tweeting' });
+    if (!roles.includes(ALLOWED_TWEET_ROLE)) return res.status(403).json({ error: 'no_tweet_permission' });
 
     const { content, image } = req.body;
     if (!content || content.trim().length < 1) return res.status(400).json({ error: 'empty content' });
