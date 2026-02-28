@@ -894,8 +894,8 @@ async function postTweet(){
     await loadTweets(false);
   } else {
     const d = await res.json();
-    if(d.error==='banned_from_tweeting'){
-      msg.style.color='var(--red)';msg.textContent='انت ممنوع من التغريد';
+    if(d.error==='no_tweet_permission'){
+      msg.style.color='var(--red)';msg.textContent='ليس لديك صلاحية التغريد';
     } else {
       msg.style.color='var(--red)';msg.textContent='حدث خطأ';
     }
