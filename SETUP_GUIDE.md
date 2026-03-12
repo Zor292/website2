@@ -1,60 +1,79 @@
-# 🎮 Live Zone Website v3.0 — دليل الإعداد
+# 🚀 دليل الإعداد الكامل - Live Zone Website
 
-## المتطلبات
-- Node.js >= 18
-- MongoDB Atlas (أو محلي)
-- Discord Application (OAuth2)
+---
 
-## متغيرات البيئة المطلوبة
+## ⚠️ سبب مشكلة "تسجيل الدخول لا يعمل"
 
-```env
-CLIENT_ID=     # معرف تطبيق Discord
-CLIENT_SECRET= # سر تطبيق Discord  
-SESSION_SECRET= # سر عشوائي للجلسات
-BOT_TOKEN=     # توكن البوت
-BOT_SECRET=    # سر البوت للـ API
-MONGO_URI=     # رابط MongoDB
-REDIRECT_URI=  # https://yourdomain.com/auth/callback
-PORT=3000
+المشكلة الأكثر شيوعاً هي **`CLIENT_SECRET` مفقود أو خاطئ**.
+للتأكد، افتح: `https://YOUR-SITE.railway.app/auth/debug`
+
+---
+
+## الخطوة 1: الحصول على CLIENT_SECRET الصحيح
+
+1. افتح https://discord.com/developers/applications
+2. اختر تطبيقك (Client ID: `1476983875598024824`)
+3. من القائمة اليسرى اضغط **OAuth2**
+4. في قسم **Client Secret** اضغط **Reset Secret**
+5. **انسخ الـ Secret فوراً** (لن يظهر مرة أخرى!)
+
+---
+
+## الخطوة 2: إضافة Redirect URI في Discord
+
+في نفس صفحة **OAuth2** ← **Redirects**:
+- اضغط **Add Redirect**
+- اكتب: `https://YOUR-SITE.up.railway.app/auth/callback`
+- اضغط **Save Changes**
+
+---
+
+## الخطوة 3: متغيرات Railway (Variables)
+
+في Railway Dashboard → مشروعك → **Variables**، أضف هذه المتغيرات:
+
+| المتغير | القيمة | ملاحظة |
+|---------|--------|--------|
+| `CLIENT_ID` | `1476983875598024824` | موجود بالفعل |
+| `CLIENT_SECRET` | (من الخطوة 1) | **⚠️ مطلوب جداً** |
+| `SESSION_SECRET` | `live-zone-2024-abc-xyz-random` | أي نص عشوائي طويل |
+| `REDIRECT_URI` | `https://YOUR-SITE.up.railway.app/auth/callback` | **⚠️ يجب أن يطابق Discord** |
+| `BOT_TOKEN` | (توكن البوت) | للرتب والأعضاء |
+| `NODE_ENV` | `production` | مطلوب |
+
+---
+
+## الخطوة 4: تشخيص المشكلة
+
+افتح في المتصفح: `https://YOUR-SITE.railway.app/auth/debug`
+
+ستظهر معلومات مثل:
+```json
+{
+  "hasSecret": true,       ← يجب أن يكون true
+  "REDIRECT_URI": "...",   ← يجب أن يطابق ما في Discord
+  "isProduction": true
+}
 ```
 
-## التثبيت
+إذا `hasSecret: false` → أضف `CLIENT_SECRET` في Railway Variables.
+إذا `REDIRECT_URI` لا يطابق → صحّح في Railway وفي Discord.
 
-```bash
-npm install
-npm start
-```
+---
 
-## التحديثات الجديدة في v3.0
+## الخطوة 5: إعادة النشر
 
-### 1. نظام الجلسات بالـ IP
-- المستخدم يسجل دخول مرة واحدة فقط
-- يبقى مسجلاً لمدة 30 يوماً
-- إذا مسح الكوكيز، يستعيد الجلسة تلقائياً بالـ IP
-- عند تسجيل الخروج يُمسح سجل الـ IP أيضاً
+بعد أي تغيير في المتغيرات:
+- في Railway اضغط **Redeploy** أو ستتحدث تلقائياً
 
-### 2. لعبة Codenames
-- يوجد في `/codenames`
-- لعبة كاملة: 25 كلمة، فريقان
-- دعم اللعب الحقيقي (4 لاعبين) أو ضد الذكاء الاصطناعي
-- نظام نقاط وترتيب
-- رتبة TOP للاعب الأفضل (ID: 1481684788996739143)
-- Real-time بالـ Socket.IO
+---
 
-### 3. الـ Socket.IO
-المشروع يستخدم Socket.IO للـ real-time، تأكد من أن المشروع يستخدم `server.listen` وليس `app.listen`
+## 🆘 مشاكل شائعة
 
-## صفحات الموقع
-- `/` — صفحة تسجيل الدخول
-- `/dashboard` — لوحة التحكم الرئيسية
-- `/codenames` — لعبة Codenames
-
-## Collections في MongoDB
-- `website_ratings` — التقييمات
-- `website_announcements` — الإعلانات
-- `rp_members_cache` — ذاكرة الـ RP
-- `website_tweets` — التغريدات
-- `website_comments` — التعليقات
-- `ip_sessions` — جلسات الـ IP (حفظ تسجيل الدخول)
-- `codenames_games` — ألعاب Codenames
-- `codenames_stats` — إحصائيات اللاعبين
+| المشكلة | الحل |
+|---------|------|
+| يعمل refresh بدون تسجيل دخول | `CLIENT_SECRET` غلط أو مفقود |
+| `redirect_uri_mismatch` | `REDIRECT_URI` في Railway لا يطابق Discord بالضبط |
+| `invalid_client` | `CLIENT_SECRET` منتهي أو غلط |
+| يسجل دخول ثم يرجع للرئيسية | `SESSION_SECRET` مفقود أو `NODE_ENV` غير `production` |
+| الموقع يفتح `/?error=...` | افتح /auth/debug واقرأ الخطأ |
