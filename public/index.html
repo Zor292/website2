@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Zone | تسجيل الدخول</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Rajdhani:wght@700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --discord:#5865F2;--discord-hover:#4752C4;
+      --sky:#00c8ff;--bg:#050709;--card:#0c1118;--border:#1e2030;--border2:rgba(0,200,255,0.15);
+      --text:#e8eaf6;--muted:#6b7280;
+    }
+    body{font-family:'Cairo',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+
+    /* ── Animated canvas background ── */
+    #bgCanvas{position:fixed;inset:0;z-index:0}
+
+    /* ── Floating particles ── */
+    .particles{position:fixed;inset:0;pointer-events:none;z-index:0}
+    .particle{position:absolute;border-radius:50%;animation:floatUp linear infinite}
+    @keyframes floatUp{0%{transform:translateY(110vh) scale(0);opacity:0}10%{opacity:1}90%{opacity:.5}100%{transform:translateY(-10vh) scale(1.5);opacity:0}}
+
+    /* ── Card ── */
+    .card{position:relative;z-index:1;background:rgba(12,17,24,0.85);backdrop-filter:blur(20px);border:1px solid var(--border2);border-radius:24px;padding:48px 42px;width:420px;max-width:95vw;text-align:center;
+      box-shadow:0 0 0 1px rgba(0,200,255,0.05),0 32px 64px rgba(0,0,0,0.7),0 0 60px rgba(0,200,255,0.06),inset 0 1px 0 rgba(255,255,255,0.04);
+      animation:cardIn .7s cubic-bezier(.22,1,.36,1) both}
+    @keyframes cardIn{from{opacity:0;transform:translateY(30px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+    .card::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,200,255,0.8),transparent);border-radius:50%}
+
+    .logo{width:70px;height:70px;background:linear-gradient(135deg,#001844,#003388,rgba(0,200,255,0.3));border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 26px;
+      box-shadow:0 8px 32px rgba(0,200,255,0.3),0 0 0 1px rgba(0,200,255,0.2);animation:logoPop .8s cubic-bezier(.34,1.56,.64,1) .2s both}
+    @keyframes logoPop{from{transform:scale(0) rotate(-10deg);opacity:0}to{transform:scale(1) rotate(0deg);opacity:1}}
+    .logo svg{width:38px;height:38px;fill:white}
+
+    h1{font-size:1.7rem;font-weight:900;letter-spacing:-.5px;margin-bottom:8px;background:linear-gradient(135deg,#fff 40%,rgba(0,200,255,.9));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:none}
+    .server-name{font-family:'Rajdhani',sans-serif;font-size:.85rem;color:var(--sky);letter-spacing:3px;font-weight:700;margin-bottom:4px;text-shadow:0 0 10px rgba(0,200,255,.5)}
+    .subtitle{font-size:.9rem;color:var(--muted);line-height:1.7;margin-bottom:32px}
+
+    .perms{margin:0 0 26px;background:rgba(0,200,255,0.04);border:1px solid rgba(0,200,255,0.12);border-radius:12px;padding:14px;text-align:right}
+    .perms p{font-size:.78rem;color:var(--muted);margin-bottom:9px;font-weight:600}
+    .perm-item{display:flex;align-items:center;gap:7px;font-size:.8rem;color:#9ca3af;margin-bottom:5px}
+    .perm-item:last-child{margin-bottom:0}
+    .perm-dot{width:6px;height:6px;border-radius:50%;background:var(--sky);flex-shrink:0;box-shadow:0 0 6px var(--sky)}
+
+    .btn-discord{display:flex;align-items:center;justify-content:center;gap:11px;width:100%;padding:14px 22px;background:var(--discord);color:#fff;border:none;border-radius:14px;font-family:'Cairo',sans-serif;font-size:.97rem;font-weight:700;cursor:pointer;text-decoration:none;transition:all .2s;box-shadow:0 4px 20px rgba(88,101,242,.35);position:relative;overflow:hidden}
+    .btn-discord::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);pointer-events:none}
+    .btn-discord:hover{background:var(--discord-hover);transform:translateY(-2px);box-shadow:0 8px 28px rgba(88,101,242,.5)}
+    .btn-discord:active{transform:translateY(0)}
+    .btn-discord svg{width:21px;height:21px;fill:white;flex-shrink:0}
+
+    .footer-note{margin-top:24px;font-size:.75rem;color:var(--muted);line-height:1.7}
+    .footer-note a{color:rgba(0,200,255,.7);text-decoration:none}
+    .footer-note a:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+<div class="particles" id="particles"></div>
+
+<div class="card">
+  <div class="logo">
+    <svg viewBox="0 0 71 55" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60.1 4.9A58.5 58.5 0 0 0 45.6.4a.2.2 0 0 0-.2.1 40.8 40.8 0 0 0-1.8 3.7 54 54 0 0 0-16.2 0A37.5 37.5 0 0 0 25.6.5a.2.2 0 0 0-.2-.1 58.4 58.4 0 0 0-14.5 4.5.2.2 0 0 0-.1.1C1.6 18.7-.9 32.2.3 45.5c0 .1.1.2.2.2a58.9 58.9 0 0 0 17.7 8.9.2.2 0 0 0 .2-.1 42 42 0 0 0 3.6-5.9.2.2 0 0 0-.1-.3 38.7 38.7 0 0 1-5.5-2.6.2.2 0 0 1 0-.4l1.1-.8a.2.2 0 0 1 .2 0c11.5 5.3 24 5.3 35.4 0a.2.2 0 0 1 .2 0l1.1.8a.2.2 0 0 1 0 .4 36.2 36.2 0 0 1-5.5 2.6.2.2 0 0 0-.1.3 47.1 47.1 0 0 0 3.6 5.9.2.2 0 0 0 .2.1 58.7 58.7 0 0 0 17.8-8.9.2.2 0 0 0 .1-.2c1.5-15.4-2.5-28.7-10.6-40.6a.2.2 0 0 0-.1-.1ZM23.7 37.8c-3.5 0-6.4-3.2-6.4-7.1s2.8-7.1 6.4-7.1c3.6 0 6.5 3.2 6.4 7.1 0 4-2.8 7.1-6.4 7.1Zm23.7 0c-3.5 0-6.4-3.2-6.4-7.1s2.8-7.1 6.4-7.1c3.6 0 6.5 3.2 6.4 7.1 0 4-2.8 7.1-6.4 7.1Z"/>
+    </svg>
+  </div>
+  <div class="server-name">LIVE ZONE</div>
+  <h1>مرحباً بك 👋</h1>
+  <p class="subtitle">سجّل دخولك باستخدام حساب Discord<br/>للوصول إلى لوحة التحكم</p>
+  <div class="perms">
+    <p>الصلاحيات المطلوبة:</p>
+    <div class="perm-item"><span class="perm-dot"></span> قراءة معلومات حسابك الأساسية</div>
+    <div class="perm-item"><span class="perm-dot"></span> الاطلاع على بريدك الإلكتروني</div>
+    <div class="perm-item"><span class="perm-dot"></span> رؤية السيرفرات المشتركة</div>
+  </div>
+  <a href="/auth/discord" class="btn-discord">
+    <svg viewBox="0 0 71 55" xmlns="http://www.w3.org/2000/svg">
+      <path d="M60.1 4.9A58.5 58.5 0 0 0 45.6.4a.2.2 0 0 0-.2.1 40.8 40.8 0 0 0-1.8 3.7 54 54 0 0 0-16.2 0A37.5 37.5 0 0 0 25.6.5a.2.2 0 0 0-.2-.1 58.4 58.4 0 0 0-14.5 4.5.2.2 0 0 0-.1.1C1.6 18.7-.9 32.2.3 45.5c0 .1.1.2.2.2a58.9 58.9 0 0 0 17.7 8.9.2.2 0 0 0 .2-.1 42 42 0 0 0 3.6-5.9.2.2 0 0 0-.1-.3 38.7 38.7 0 0 1-5.5-2.6.2.2 0 0 1 0-.4l1.1-.8a.2.2 0 0 1 .2 0c11.5 5.3 24 5.3 35.4 0a.2.2 0 0 1 .2 0l1.1.8a.2.2 0 0 1 0 .4 36.2 36.2 0 0 1-5.5 2.6.2.2 0 0 0-.1.3 47.1 47.1 0 0 0 3.6 5.9.2.2 0 0 0 .2.1 58.7 58.7 0 0 0 17.8-8.9.2.2 0 0 0 .1-.2c1.5-15.4-2.5-28.7-10.6-40.6a.2.2 0 0 0-.1-.1ZM23.7 37.8c-3.5 0-6.4-3.2-6.4-7.1s2.8-7.1 6.4-7.1c3.6 0 6.5 3.2 6.4 7.1 0 4-2.8 7.1-6.4 7.1Zm23.7 0c-3.5 0-6.4-3.2-6.4-7.1s2.8-7.1 6.4-7.1c3.6 0 6.5 3.2 6.4 7.1 0 4-2.8 7.1-6.4 7.1Z"/>
+    </svg>
+    تسجيل الدخول عبر Discord
+  </a>
+  <p class="footer-note">
+    بالضغط أعلاه توافق على <a href="#">شروط الخدمة</a> و<a href="#">سياسة الخصوصية</a>
+  </p>
+</div>
+
+<script>
+// Animated canvas
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let w, h;
+const nodes = [];
+
+function resize(){
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+class Node{
+  constructor(){this.reset();}
+  reset(){
+    this.x=Math.random()*w;this.y=Math.random()*h;
+    this.vx=(Math.random()-.5)*.5;this.vy=(Math.random()-.5)*.5;
+    this.r=Math.random()*2+1;this.a=Math.random();
+  }
+  update(){
+    this.x+=this.vx;this.y+=this.vy;
+    if(this.x<0||this.x>w)this.vx*=-1;
+    if(this.y<0||this.y>h)this.vy*=-1;
+  }
+}
+
+for(let i=0;i<60;i++) nodes.push(new Node());
+
+function draw(){
+  ctx.clearRect(0,0,w,h);
+  // gradient bg
+  const g=ctx.createRadialGradient(w*.8,.1*h,0,w*.5,.5*h,w*.7);
+  g.addColorStop(0,'rgba(0,200,255,0.05)');g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,w,h);
+
+  // lines
+  for(let i=0;i<nodes.length;i++){
+    for(let j=i+1;j<nodes.length;j++){
+      const dx=nodes[i].x-nodes[j].x, dy=nodes[i].y-nodes[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<140){
+        ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);
+        ctx.strokeStyle=`rgba(0,200,255,${(1-d/140)*0.1})`;ctx.lineWidth=.5;ctx.stroke();
+      }
+    }
+  }
+  // nodes
+  nodes.forEach(n=>{
+    ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(0,200,255,${n.a*0.5})`;ctx.fill();
+    n.update();
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+
+// Floating particles
+const pc = document.getElementById('particles');
+for(let i=0;i<16;i++){
+  const p=document.createElement('div');p.className='particle';
+  const c=Math.random()>.5?'rgba(0,200,255,0.4)':'rgba(88,101,242,0.4)';
+  const sz=Math.random()*3+1;
+  p.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;background:${c};animation-duration:${Math.random()*14+8}s;animation-delay:${Math.random()*8}s`;
+  pc.appendChild(p);
+}
+</script>
+</body>
+</html>
